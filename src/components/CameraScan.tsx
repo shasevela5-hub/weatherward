@@ -15,6 +15,7 @@ const CameraScan: React.FC<CameraScanProps> = ({ onItemDetected, onError }) => {
   const startCamera = useCallback(async () => {
     try {
       setError(null);
+      console.log('Starting camera with environment facing mode');
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' },
         audio: false
@@ -23,8 +24,14 @@ const CameraScan: React.FC<CameraScanProps> = ({ onItemDetected, onError }) => {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
         setIsStreaming(true);
+        console.log('Camera streaming started successfully');
       }
     } catch (err: any) {
+      console.error('Camera start error:', {
+        name: err.name,
+        message: err.message,
+        stack: err.stack
+      });
       const message = err.name === 'NotAllowedError' 
         ? 'Camera access denied. Please allow camera permissions.'
         : err.name === 'NotFoundError'
@@ -36,6 +43,7 @@ const CameraScan: React.FC<CameraScanProps> = ({ onItemDetected, onError }) => {
   }, [onError]);
 
   const stopCamera = useCallback(() => {
+    console.log('Stopping camera');
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach(track => track.stop());
@@ -45,12 +53,16 @@ const CameraScan: React.FC<CameraScanProps> = ({ onItemDetected, onError }) => {
   }, []);
 
   const capturePhoto = useCallback(async () => {
-    if (!videoRef.current || !canvasRef.current) return;
+    if (!videoRef.current || !canvasRef.current) {
+      console.error('Capture failed: Video or canvas ref not available');
+      return;
+    }
 
     setIsCapturing(true);
     setError(null);
 
     try {
+      console.log('Capturing photo from video feed');
       const canvas = canvasRef.current;
       const video = videoRef.current;
       canvas.width = video.videoWidth;
@@ -61,6 +73,7 @@ const CameraScan: React.FC<CameraScanProps> = ({ onItemDetected, onError }) => {
       ctx.drawImage(video, 0, 0);
 
       const imageData = canvas.toDataURL('image/jpeg', 0.8);
+      console.log('Photo captured, sending to analysis API');
 
       // Simulate backend analysis or call actual API
       const response = await fetch('/api/camera/analyze', {
@@ -74,8 +87,15 @@ const CameraScan: React.FC<CameraScanProps> = ({ onItemDetected, onError }) => {
       }
 
       const data = await response.json();
+      console.log('Analysis successful, detected items:', data.items);
       onItemDetected(data.items || []);
     } catch (err: any) {
+      console.error('Capture and analysis error:', {
+        name: err.name,
+        message: err.message,
+        stack: err.stack,
+        status: err.status
+      });
       const message = `Capture failed: ${err.message}`;
       setError(message);
       onError(message);
