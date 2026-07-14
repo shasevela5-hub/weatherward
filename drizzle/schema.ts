@@ -25,4 +25,21 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+export const outfitScans = mysqlTable("outfitScans", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().references(() => users.id),
+  imageUrl: text("imageUrl").notNull(),
+  detectedItems: text("detectedItems").notNull(), // JSON array of clothing items
+  colorPalette: text("colorPalette").notNull(), // JSON array of dominant colors
+  styleScore: int("styleScore").notNull(), // 1-10 rating
+  styleTags: text("styleTags").notNull(), // JSON array of style tags
+  weatherCondition: varchar("weatherCondition", { length: 100 }),
+  temperature: int("temperature"), // in Celsius
+  weatherIcon: varchar("weatherIcon", { length: 50 }),
+  recommendations: text("recommendations"), // JSON array of recommendations
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type OutfitScan = typeof outfitScans.$inferSelect;
+export type InsertOutfitScan = typeof outfitScans.$inferInsert;
