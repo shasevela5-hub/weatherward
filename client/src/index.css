@@ -144,6 +144,7 @@
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-black tracking-tight;
+    font-family: 'Playfair Display', 'Bodoni', serif;
   }
   
   h1 {
@@ -369,6 +370,20 @@
 
   .gradient-accent {
     background: linear-gradient(135deg, oklch(0.85 0.15 60) 0%, oklch(0.75 0.12 55) 100%);
+  }
+
+  /* Glassmorphism effect */
+  .glassmorphism {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  .glassmorphism-dark {
+    @apply bg-black/20 backdrop-blur-md border border-white/10;
+  }
+
+  /* Font serif for luxury */
+  .font-serif {
+    font-family: 'Playfair Display', 'Bodoni', serif;
   }
 
   /* Mobile-first safe areas */

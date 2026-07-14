@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { useAuth } from "./_core/hooks/useAuth";
 import { Loader2 } from "lucide-react";
+import BottomNav from "./components/BottomNav";
 import Home from "./pages/Home";
 import CameraScreen from "./pages/CameraScreen";
 import HistoryScreen from "./pages/HistoryScreen";
@@ -42,28 +43,31 @@ function Router() {
   }
 
   return (
-    <Switch>
-      {/* Public route */}
-      <Route path={"/login"} component={LoginPage} />
+    <>
+      <Switch>
+        {/* Public route */}
+        <Route path={"/login"} component={LoginPage} />
 
-      {/* Protected routes */}
-      {isAuthenticated ? (
-        <>
-          <Route path={"/"} component={Home} />
-          <Route path={"/camera"} component={CameraScreen} />
-          <Route path={"/history"} component={HistoryScreen} />
-          <Route path={"/scan/:id"} component={ScanDetailScreen} />
-        </>
-      ) : (
-        <>
-          <Route path={"*"} component={LoginPage} />
-        </>
-      )}
+        {/* Protected routes */}
+        {isAuthenticated ? (
+          <>
+            <Route path={"/"} component={Home} />
+            <Route path={"/camera"} component={CameraScreen} />
+            <Route path={"/history"} component={HistoryScreen} />
+            <Route path={"/scan/:id"} component={ScanDetailScreen} />
+          </>
+        ) : (
+          <>
+            <Route path={"*"} component={LoginPage} />
+          </>
+        )}
 
-      {/* 404 fallback */}
-      <Route path={"/404"} component={NotFound} />
-      <Route component={NotFound} />
-    </Switch>
+        {/* 404 fallback */}
+        <Route path={"/404"} component={NotFound} />
+        <Route component={NotFound} />
+      </Switch>
+      {isAuthenticated && <BottomNav />}
+    </>
   );
 }
 
