@@ -14,7 +14,16 @@ export default function CameraScreen() {
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showFlash, setShowFlash] = useState(false);
+  const [detectedItems, setDetectedItems] = useState<string[]>([]);
+  const [colorPalette, setColorPalette] = useState<string[]>([]);
+  const [styleTags, setStyleTags] = useState<string[]>([]);
+  const [styleScore, setStyleScore] = useState<number>(0);
+  const [recommendations, setRecommendations] = useState<string[]>([]);
+  const [weatherCondition, setWeatherCondition] = useState<string | null>(null);
+  const [temperature, setTemperature] = useState<number | null>(null);
+
   const createOutfitMutation = trpc.outfit.create.useMutation();
+  const analyzeMutation = trpc.outfit.analyze.useMutation();
 
   const startCamera = useCallback(async () => {
     try {
@@ -69,40 +78,75 @@ export default function CameraScreen() {
       setShowFlash(true);
       setTimeout(() => setShowFlash(false), 600);
 
-      // Simulate AI analysis - in production, call actual API
-      const detectedItems = ["White T-Shirt", "Blue Jeans", "White Sneakers"];
-      const colorPalette = ["#FFFFFF", "#0066CC", "#F5F5F5"];
-      const styleTags = ["casual", "minimalist", "comfortable"];
-      const styleScore = 8;
-      const recommendations = [
-        "Add a denim jacket for extra style",
-        "Perfect for casual outings",
-        "Great color coordination",
-      ];
-
-      // Create outfit scan
-      await createOutfitMutation.mutateAsync({
-        imageUrl: imageData,
-        detectedItems,
-        colorPalette,
-        styleScore,
-        styleTags,
-        weatherCondition: "Sunny",
-        temperature: 22,
-        weatherIcon: "sunny",
-        recommendations,
+      // 1. Get current location for weather
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
       });
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
 
-      toast.success("Outfit scanned successfully!");
-      setTimeout(() => setLocation("/history"), 1000);
-    } catch (err: any) {
-      const message = `Capture failed: ${err.message}`;
-      setError(message);
-      toast.error(message);
+      // 2. Fetch weather data (using a placeholder for now, will integrate real API later)
+      // For now, let\'s simulate a weather API call
+      const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+      const weatherData = await weatherResponse.json();
+      const currentTemperature = weatherData.current_weather.temperature;
+      const weatherCode = weatherData.current_weather.weathercode;
+      const weatherConditionsMap: { [key: number]: string } = {
+        0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+        45: "Fog", 48: "Depositing rime fog",
+        51: "Drizzle light", 53: "Drizzle moderate", 55: "Drizzle dense intensity",
+        56: "Freezing Drizzle light", 57: "Freezing Drizzle dense intensity",
+        61: "Rain slight", 63: "Rain moderate", 65: "Rain heavy intensity",
+        66: "Freezing Rain light", 67: "Freezing Rain heavy intensity",
+        71: "Snow fall slight", 73: "Snow fall moderate", 75: "Snow fall heavy intensity",
+        77: "Snow grains",
+        80: "Rain showers slight", 81: "Rain showers moderate", 82: "Rain showers violent",
+        85: "Snow showers slight", 86: "Snow showers heavy",
+        95: "Thunderstorm slight or moderate",
+        96: "Thunderstorm with slight hail", 99: "Thunderstorm with heavy hail"
+      };
+      const currentCondition = weatherConditionsMap[weatherCode] || "Unknown";
+
+      setWeatherCondition(currentCondition);
+      setTemperature(currentTemperature);
+
+      // 3. Perform AI analysis
+      const analysisResult = await analyzeMutation.mutateAsync({ imageBase64: imageData });
+
+      setDetectedItems(analysisResult.detectedItems);
+      setColorPalette(analysisResult.colorPalette);
+      setStyleTags(analysisResult.styleTags);
+      setStyleScore(analysisResult.styleScore);
+        setRecommendations(analysisResult.recommendations);
+
+        // 4. Generate weather-aware recommendations
+        // We can't call trpc.outfit.generateWeatherRecommendations.mutate directly like this in a component.
+        // Instead, we'll rely on the server-side fallback in createOutfitMutation.
+        // The create mutation already calls generateWeatherRecommendations if recommendations are not provided.
+
+        // 5. Save scan to history
+        const newScan = await createOutfitMutation.mutateAsync({
+          imageUrl: imageData, // In a real app, this would be an S3 URL
+          detectedItems: analysisResult.detectedItems,
+          colorPalette: analysisResult.colorPalette,
+          styleScore: analysisResult.styleScore,
+          styleTags: analysisResult.styleTags,
+          weatherCondition: currentCondition,
+          temperature: currentTemperature,
+          weatherIcon: currentCondition, // Using condition as icon for now
+          // Omit recommendations to trigger server-side weather-aware generation
+        });
+
+      toast.success("Outfit analyzed and saved!");
+        setLocation(`/scan/${newScan.id}`);
+    } catch (error: any) {
+      console.error("Scan failed:", error);
+      toast.error("Failed to analyze outfit. Please try again.");
+      setError(`Capture failed: ${error.message}`);
     } finally {
       setIsCapturing(false);
     }
-  }, [createOutfitMutation, setLocation]);
+  }, [createOutfitMutation, analyzeMutation, setLocation]);
 
   useEffect(() => {
     startCamera();

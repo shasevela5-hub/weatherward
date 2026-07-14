@@ -22,6 +22,21 @@ export const appRouter = router({
   }),
 
   outfit: router({
+    generateWeatherRecommendations: publicProcedure
+      .input(z.object({
+        detectedItems: z.array(z.string()),
+        styleTags: z.array(z.string()),
+        weatherCondition: z.string().nullable(),
+        temperature: z.number().nullable(),
+      }))
+      .mutation(async ({ input }) => {
+        return generateWeatherRecommendations(
+          input.detectedItems,
+          input.styleTags,
+          input.weatherCondition,
+          input.temperature
+        );
+      }),
     analyze: protectedProcedure
       .input(z.object({
         imageBase64: z.string(),

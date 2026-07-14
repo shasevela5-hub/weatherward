@@ -93,8 +93,9 @@ export async function createOutfitScan(data: InsertOutfitScan) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(outfitScans).values(data);
-  return result;
+  const result: any = await db.insert(outfitScans).values(data);
+  // Drizzle for MySQL returns { insertId: number } for auto-incrementing IDs
+  return { id: result.insertId };
 }
 
 export async function getOutfitScans(userId: number) {

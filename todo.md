@@ -3,8 +3,8 @@
 ## Phase 1: Project Setup & Database
 - [x] Database schema for outfit scans, detected items, weather context, and style scores
 - [x] tRPC procedures for creating/retrieving outfit scans
-- [ ] Weather API integration (OpenWeatherMap or similar)
-- [ ] AI outfit analysis integration (Claude/GPT for clothing detection)
+- [x] Weather API integration (OpenWeatherMap or similar)
+- [x] AI outfit analysis integration (Claude/GPT for clothing detection)
 
 ## Phase 2: Dark Luxury Design System
 - [x] Define dark luxury color palette (deep blacks, golds, whites, accent colors)
@@ -21,13 +21,9 @@
 - [x] Capture flash effect animation
 
 ## Phase 4: AI Analysis & Weather Integration
-- [x] Clothing item detection from captured images (AI-powered via LLM)
-- [x] Style tag generation (casual, formal, sporty, etc.)
-- [x] Color palette extraction from outfit
-- [x] Outfit rating system (1-10)
-- [x] Real-time weather fetch based on user location (integrated)
-- [x] Weather-appropriate recommendations engine
-- [x] Complementary piece suggestions
+- [x] Implement real outfit analysis from captured images via backend/AI instead of hardcoded detected items, tags, colors, scores, and recommendations.
+- [x] Implement geolocation + real weather API fetch and store/display live weather data in scans.
+- [x] Generate and display recommendations/complementary suggestions from analyzed outfit data plus live weather in the main scan flow.
 
 ## Phase 5: Outfit History & Recommendations
 - [x] Outfit history feed with rich card layout
@@ -39,11 +35,15 @@
 
 ## Phase 6: Micro-interactions & Premium Feel
 - [x] Page transition animations (fade, slide)
-- [x] Button press animations (scale, ripple)
+- [ ] Button press animations (scale, ripple) - *Ripple effect missing*
 - [x] Loading shimmer skeletons for cards
 - [x] Capture flash effect on photo capture
 - [x] Smooth state transitions
-- [x] Haptic feedback indicators (visual)
+- [ ] Haptic feedback indicators (visual) - *Needs distinct visual indicator*
+
+- [x] Fix outfit creation/navigation so the create mutation returns the created scan id in a stable shape and the app routes to the actual scan detail page after capture.
+- [x] Pass live weather context into the recommendation generation step, or generate recommendations server-side after weather fetch so displayed suggestions are truly weather-aware.
+- [x] Add explicit weather/geolocation failure handling or fallback UX in the scan flow before marking weather-driven recommendations complete.
 
 ## Phase 7: Testing & Optimization
 - [x] Mobile responsiveness across all screens
@@ -59,8 +59,14 @@
 - [x] Deliver to user
 
 ## Additional Features to Add
-- [ ] Real weather API integration
 - [ ] Advanced AI clothing detection
 - [ ] User profile and preferences
 - [ ] Share outfit recommendations
 - [ ] Outfit favorites/bookmarking
+
+## Sign-In Page Redesign
+- [ ] Create premium login page with dark luxury design
+- [ ] Integrate Manus OAuth sign-in button
+- [ ] Add authentication state management and routing protection
+- [ ] Verify unauthenticated users are redirected to login
+- [ ] Test login flow end-to-end
