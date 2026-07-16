@@ -43,50 +43,50 @@
 }
 
 :root {
-  /* Dark Luxury Theme - Deep blacks with gold accents */
+  /* Refined Luxury Theme - Deep charcoal with teal/gold accents */
   --primary: oklch(0.95 0.01 60);
-  --primary-foreground: oklch(0.08 0.01 0);
+  --primary-foreground: oklch(0.15 0.01 0);
   --sidebar-primary: oklch(0.95 0.01 60);
-  --sidebar-primary-foreground: oklch(0.08 0.01 0);
-  --chart-1: oklch(0.95 0.01 60);
-  --chart-2: oklch(0.85 0.01 60);
-  --chart-3: oklch(0.75 0.01 60);
-  --chart-4: oklch(0.65 0.01 60);
-  --chart-5: oklch(0.55 0.01 60);
-  --radius: 0.65rem;
+  --sidebar-primary-foreground: oklch(0.15 0.01 0);
+  --chart-1: oklch(0.7 0.15 200);
+  --chart-2: oklch(0.85 0.15 60);
+  --chart-3: oklch(0.75 0.12 55);
+  --chart-4: oklch(0.65 0.1 50);
+  --chart-5: oklch(0.55 0.08 45);
+  --radius: 0.75rem;
   
-  /* Deep black background with subtle warmth */
-  --background: oklch(0.08 0.01 0);
-  --foreground: oklch(0.95 0.01 60);
+  /* Deep charcoal background */
+  --background: oklch(0.12 0.01 0);
+  --foreground: oklch(0.93 0.01 60);
   
   /* Card surfaces - slightly lighter than background */
-  --card: oklch(0.12 0.01 0);
-  --card-foreground: oklch(0.95 0.01 60);
+  --card: oklch(0.16 0.01 0);
+  --card-foreground: oklch(0.93 0.01 60);
   
   /* Popover - elevated surface */
-  --popover: oklch(0.15 0.01 0);
-  --popover-foreground: oklch(0.95 0.01 60);
+  --popover: oklch(0.19 0.01 0);
+  --popover-foreground: oklch(0.93 0.01 60);
   
   /* Secondary - muted surfaces */
-  --secondary: oklch(0.18 0.01 0);
-  --secondary-foreground: oklch(0.85 0.01 60);
+  --secondary: oklch(0.22 0.01 0);
+  --secondary-foreground: oklch(0.83 0.01 60);
   
   /* Muted - for disabled/inactive states */
-  --muted: oklch(0.22 0.01 0);
-  --muted-foreground: oklch(0.65 0.01 60);
+  --muted: oklch(0.26 0.01 0);
+  --muted-foreground: oklch(0.63 0.01 60);
   
-  /* Accent - gold for luxury */
-  --accent: oklch(0.85 0.15 60);
-  --accent-foreground: oklch(0.08 0.01 0);
+  /* Accent - teal/gold for weather elements */
+  --accent: oklch(0.7 0.15 200);
+  --accent-foreground: oklch(0.95 0.01 60);
   
   /* Destructive - red for warnings */
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   
   /* Borders and inputs */
-  --border: oklch(0.2 0.01 0);
-  --input: oklch(0.15 0.01 0);
-  --ring: oklch(0.85 0.15 60);
+  --border: oklch(0.22 0.02 200);
+  --input: oklch(0.18 0.01 0);
+  --ring: oklch(0.7 0.15 200);
   
   /* Sidebar */
   --sidebar: oklch(0.12 0.01 0);
@@ -139,24 +139,26 @@
   
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Satoshi', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.02em;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-black tracking-tight;
-    font-family: 'Playfair Display', 'Bodoni', serif;
+    @apply font-bold tracking-tight;
+    font-family: 'Satoshi', sans-serif;
+    letter-spacing: -0.03em;
   }
   
   h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl;
+    @apply text-5xl md:text-6xl lg:text-7xl font-black;
   }
   
   h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl;
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold;
   }
   
   h3 {
-    @apply text-2xl md:text-3xl lg:text-4xl;
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold;
   }
   
   h4 {
@@ -372,18 +374,40 @@
     background: linear-gradient(135deg, oklch(0.85 0.15 60) 0%, oklch(0.75 0.12 55) 100%);
   }
 
-  /* Glassmorphism effect */
+  /* Glassmorphism effect - enhanced with teal accents */
   .glassmorphism {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
+    @apply bg-white/5 backdrop-blur-xl border border-white/15 shadow-lg;
   }
 
   .glassmorphism-dark {
-    @apply bg-black/20 backdrop-blur-md border border-white/10;
+    @apply bg-black/30 backdrop-blur-xl border border-teal-500/20 shadow-lg;
+  }
+
+  /* Subtle gradient backgrounds */
+  .gradient-subtle {
+    background: linear-gradient(135deg, oklch(0.16 0.01 0) 0%, oklch(0.14 0.02 200) 100%);
+  }
+
+  .gradient-teal-accent {
+    background: linear-gradient(135deg, oklch(0.7 0.15 200) 0%, oklch(0.6 0.12 190) 100%);
+  }
+
+  .gradient-gold-accent {
+    background: linear-gradient(135deg, oklch(0.85 0.15 60) 0%, oklch(0.75 0.12 55) 100%);
   }
 
   /* Font serif for luxury */
   .font-serif {
     font-family: 'Playfair Display', 'Bodoni', serif;
+  }
+
+  /* Neumorphic button effects */
+  .btn-neumorphic {
+    @apply bg-card border border-border rounded-xl px-6 py-3 font-semibold transition-all duration-200 shadow-md hover:shadow-lg hover:border-accent active:shadow-inner active:scale-95;
+  }
+
+  .btn-neumorphic-elevated {
+    @apply bg-gradient-to-br from-card to-card/80 border border-accent/30 rounded-xl px-6 py-3 font-semibold transition-all duration-200 shadow-lg hover:shadow-xl hover:border-accent/60 active:shadow-md active:scale-95;
   }
 
   /* Mobile-first safe areas */

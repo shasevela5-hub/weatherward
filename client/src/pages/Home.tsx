@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Loader2, Sparkles, Flame } from "lucide-react";
+import { Loader2, Sparkles, Flame, Heart, Share2 } from "lucide-react";
 import { useLocation } from "wouter";
 import PageTransition from "@/components/PageTransition";
 import { useEffect, useState } from "react";
@@ -10,12 +10,40 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const [currentHour, setCurrentHour] = useState(new Date().getHours());
   const [styleStreak, setStyleStreak] = useState(12);
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     setCurrentHour(new Date().getHours());
   }, []);
 
   const greeting = currentHour < 12 ? "Good Morning" : currentHour < 18 ? "Good Afternoon" : "Good Evening";
+
+  const handleShare = (scanId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      navigator.share({
+        title: `Weatherward Outfit ${scanId}`,
+        text: `Check out my outfit analysis from Weatherward!`,
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert("Link copied to clipboard!");
+    }
+  };
+
+  const toggleFavorite = (scanId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFavorites((prev) => {
+      const newFavs = new Set(prev);
+      if (newFavs.has(scanId)) {
+        newFavs.delete(scanId);
+      } else {
+        newFavs.add(scanId);
+      }
+      return newFavs;
+    });
+  };
 
   if (loading) {
     return (
@@ -63,7 +91,7 @@ export default function Home() {
           {/* Feature Cards Grid */}
           <div className="grid grid-cols-1 gap-6 mb-12">
             {/* Color Analysis Card */}
-            <div className="group relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-pink-500/20 via-red-500/10 to-black border border-accent/20 hover:border-accent/50 transition-all duration-300 cursor-pointer transform hover:scale-105">
+            <div className="group relative overflow-hidden rounded-2xl p-8 glassmorphism-dark hover:border-accent/50 transition-all duration-300 cursor-pointer transform hover:scale-105">
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-pink-500/10 rounded-full blur-3xl"></div>
               </div>
@@ -85,7 +113,7 @@ export default function Home() {
             </div>
 
             {/* Weather Match Card */}
-            <div className="group relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-blue-500/20 via-cyan-500/10 to-black border border-accent/20 hover:border-accent/50 transition-all duration-300 cursor-pointer transform hover:scale-105">
+            <div className="group relative overflow-hidden rounded-2xl p-8 glassmorphism-dark hover:border-accent/50 transition-all duration-300 cursor-pointer transform hover:scale-105">
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl"></div>
               </div>
@@ -104,7 +132,7 @@ export default function Home() {
             </div>
 
             {/* Style Rating Card */}
-            <div className="group relative overflow-hidden rounded-2xl p-8 bg-gradient-to-br from-amber-500/20 via-yellow-500/10 to-black border border-accent/20 hover:border-accent/50 transition-all duration-300 cursor-pointer transform hover:scale-105">
+            <div className="group relative overflow-hidden rounded-2xl p-8 glassmorphism-dark hover:border-accent/50 transition-all duration-300 cursor-pointer transform hover:scale-105">
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl"></div>
               </div>
@@ -131,12 +159,37 @@ export default function Home() {
               {[1, 2, 3, 4, 5].map((i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 w-40 h-48 rounded-xl bg-gradient-to-br from-accent/20 to-black border border-accent/30 hover:border-accent/60 transition-all duration-300 cursor-pointer transform hover:scale-105 flex items-center justify-center group"
+                  className="flex-shrink-0 w-40 h-48 rounded-xl bg-gradient-to-br from-accent/20 to-black border border-accent/30 hover:border-accent/60 transition-all duration-300 cursor-pointer transform hover:scale-105 flex flex-col items-center justify-center group relative overflow-hidden"
                   onClick={() => setLocation(`/history`)}
                 >
-                  <div className="text-center">
+                  {/* Card content */}
+                  <div className="text-center z-10">
                     <span className="text-4xl mb-2 block">👗</span>
                     <p className="text-xs text-muted-foreground">Scan {i}</p>
+                  </div>
+
+                  {/* Action buttons - visible on hover */}
+                  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3 z-20">
+                    <button
+                      onClick={(e) => toggleFavorite(i, e)}
+                      className="p-2 rounded-full bg-accent/20 hover:bg-accent/40 transition-all duration-200 active:scale-95"
+                      title="Save to favorites"
+                    >
+                      <Heart
+                        className={`w-5 h-5 transition-all duration-200 ${
+                          favorites.has(i)
+                            ? "fill-accent text-accent"
+                            : "text-accent/60 hover:text-accent"
+                        }`}
+                      />
+                    </button>
+                    <button
+                      onClick={(e) => handleShare(i, e)}
+                      className="p-2 rounded-full bg-accent/20 hover:bg-accent/40 transition-all duration-200 active:scale-95"
+                      title="Share outfit"
+                    >
+                      <Share2 className="w-5 h-5 text-accent/60 hover:text-accent transition-all duration-200" />
+                    </button>
                   </div>
                 </div>
               ))}
@@ -145,24 +198,21 @@ export default function Home() {
 
           {/* CTA Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Button
+            <button
               onClick={() => setLocation("/camera")}
-              className="w-full py-6 text-lg bg-gradient-accent hover:shadow-lg active:scale-95 transition-all duration-200"
+              className="btn-neumorphic-elevated w-full py-4 text-lg flex items-center justify-center gap-2"
             >
-              <Sparkles className="w-5 h-5 mr-2" />
+              <Sparkles className="w-5 h-5" />
               Scan New Outfit
-            </Button>
-            <Button
-              variant="outline"
+            </button>
+            <button
               onClick={() => setLocation("/history")}
-              className="w-full py-6 text-lg"
+              className="btn-neumorphic w-full py-4 text-lg"
             >
               View History
-            </Button>
+            </button>
           </div>
         </div>
-
-
       </div>
     </PageTransition>
   );
